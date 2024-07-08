@@ -4,7 +4,7 @@ import { AccountAddress } from "components/AccountAddress"
 import { AccountWithAvatar } from "components/AccountWithAvatar"
 import { ContractBreadcrumbs } from "components/ContractBreadcrumbs"
 import { ParamSpec, ParamsTable } from "components/ParamsTable"
-import { getEffectiveAbi, useEtherscanContractInfo } from "hooks/useEtherscanContractInfo"
+import { getEffectiveAbi, useExplorerContractInfo } from "hooks/useExplorerContractInfo"
 import { useNnsNameWithEnsFallback } from "hooks/useNnsNameWithEnsFallback"
 import { FC, useMemo } from "react"
 import { NounsTransactionData } from "utils/governanceUtils"
@@ -16,7 +16,7 @@ export interface TransactionProps extends StackProps {
 }
 
 export const Transaction: FC<TransactionProps> = ({ data: { calldata, signature, target, value }, ...props }) => {
-  const { data: contractInfo, isLoading: isLoadingContractInfo } = useEtherscanContractInfo(target)
+  const { data: contractInfo, isLoading: isLoadingContractInfo } = useExplorerContractInfo(target)
   const { data: nnsOrEnsName, isLoading: isLoadingNnsOrEnsName } = useNnsNameWithEnsFallback(target)
   const { data: ensAvatar, isLoading: isLoadingEnsAvatar } = useEnsAvatar({
     name: nnsOrEnsName,
@@ -35,9 +35,9 @@ export const Transaction: FC<TransactionProps> = ({ data: { calldata, signature,
     () =>
       partialFunc
         ? decodeFunctionData({
-            abi: [partialFunc],
-            data: (getFunctionSelector(signature) + calldata.substring(2)) as `0x${string}`,
-          })
+          abi: [partialFunc],
+          data: (getFunctionSelector(signature) + calldata.substring(2)) as `0x${string}`,
+        })
         : undefined,
     [partialFunc, calldata, signature]
   )

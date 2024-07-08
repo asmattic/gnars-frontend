@@ -18,7 +18,7 @@ import {
   BASE_SENDIT_TOKEN_ADDRESS,
   BASE_TREASURY_ADDRESS,
   BASE_USDC_TOKEN_ADDRESS,
-  BASE_V2_GNAR_ADDRESS,
+  BASE_GNAR_ADDRESS,
 } from "constants/gnarsDao"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { useGnarsV2TokenBalanceOf } from "utils/sdk"
@@ -103,7 +103,7 @@ export const TreasuryBalance = () => {
     }
     setMultisigBalance([])
     setTreasuryBalance([])
-    getTokens()
+    void getTokens()
   }, [])
 
   const { data: multisigGnarsBalance } = useGnarsV2TokenBalanceOf({
@@ -119,7 +119,7 @@ export const TreasuryBalance = () => {
           formatted: multisigGnarsBalance.toString(),
           value: multisigGnarsBalance,
           label: "Gnars",
-          url: `https://basescan.org/token/${BASE_V2_GNAR_ADDRESS}?a=${BASE_MULTISIG_ADDRESS}`,
+          url: `https://basescan.org/token/${BASE_GNAR_ADDRESS}?a=${BASE_MULTISIG_ADDRESS}`,
         },
       ])
   }, [multisigGnarsBalance])
@@ -193,31 +193,31 @@ export const TreasuryBalance = () => {
             <Text fontSize={"sm"}>Multisig</Text>
             {multisigBalance.length
               ? multisigBalance.map((token) =>
-                  token.value > 1 ? (
-                    <Tooltip key={token.label} label={token.label}>
-                      <Button size={"sm"} w={"100%"} variant={"outline"}>
-                        <Link href={token.url} target="_blank" whiteSpace={"nowrap"}>
-                          {token.icon} {token.formatted}
-                        </Link>
-                      </Button>
-                    </Tooltip>
-                  ) : null
-                )
+                token.value > 1 ? (
+                  <Tooltip key={token.label} label={token.label}>
+                    <Button size={"sm"} w={"100%"} variant={"outline"}>
+                      <Link href={token.url} target="_blank" whiteSpace={"nowrap"}>
+                        {token.icon} {token.formatted}
+                      </Link>
+                    </Button>
+                  </Tooltip>
+                ) : null
+              )
               : null}
             <Divider />
             <Text fontSize={"sm"}>Treasury</Text>
             {treasuryBalance.length
               ? treasuryBalance.map((token) =>
-                  token.value > 1 ? (
-                    <Tooltip key={token.label} label={token.label}>
-                      <Button size={"sm"} w={"100%"} variant={"outline"}>
-                        <Link href={token.url} target="_blank" whiteSpace={"nowrap"}>
-                          {token.icon} {token.formatted}
-                        </Link>
-                      </Button>
-                    </Tooltip>
-                  ) : null
-                )
+                token.value > 1 ? (
+                  <Tooltip key={token.label} label={token.label}>
+                    <Button size={"sm"} w={"100%"} variant={"outline"}>
+                      <Link href={token.url} target="_blank" whiteSpace={"nowrap"}>
+                        {token.icon} {token.formatted}
+                      </Link>
+                    </Button>
+                  </Tooltip>
+                ) : null
+              )
               : null}
             <Divider />
           </VStack>

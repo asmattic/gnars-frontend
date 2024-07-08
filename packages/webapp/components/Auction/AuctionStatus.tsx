@@ -4,6 +4,7 @@ import { truncatedAmount } from "../../utils"
 import { AvatarWallet } from "../AvatarWallet"
 import { Countdown } from "./Countdown"
 
+import { FC } from "react"
 interface AuctionStatusProps extends StackProps {
   endTimestamp?: number
   auctionEnded: boolean
@@ -46,17 +47,17 @@ export const AuctionStatus: FC<AuctionStatusProps> = ({
           {isBurned
             ? "Outcome"
             : isClaimedGnar
-            ? "Winner"
-            : auctionEnded
-            ? "Winner"
-            : "Auction ends in"}
+              ? "Winner"
+              : auctionEnded
+                ? "Winner"
+                : "Auction ends in"}
         </Text>
         <Box fontSize={["2xl", "3xl"]} fontWeight={"bold"} lineHeight={1}>
           {isBurned ? (
             <Text>Burned 🔥</Text>
           ) : auctionEnded || !endTimestamp ? (
             !!winner ? (
-              <AvatarWallet address={winner} />
+              <AvatarWallet address={winner} isLoading={false} />
             ) : (
               "N/A"
             )

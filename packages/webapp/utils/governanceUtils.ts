@@ -3,7 +3,7 @@ import { ProposalQuery, ProposalsQuery, ProposalStatus } from "../.graphclient"
 
 export type ProposalData = ProposalsQuery["proposals"][0]
 
-export type NewProposalData = {}
+// export type NewProposalData = {}
 
 export type EffectiveProposalStatus =
   | ProposalStatus
@@ -61,8 +61,8 @@ export const getProposalEffectiveStatus = (
       return blockTimestamp! >= BigInt(proposal.executionETA) + GRACE_PERIOD
         ? "EXPIRED"
         : blockTimestamp! >= BigInt(proposal.executionETA)
-        ? "EXECUTABLE"
-        : "QUEUED"
+          ? "EXECUTABLE"
+          : "QUEUED"
     default:
       return "UNDETERMINED"
   }
@@ -80,7 +80,7 @@ export interface Votes {
   totalSupply: number
 }
 
-export interface Dates {}
+export interface Dates { }
 
 export const getQuorumVotes = (prop: ProposalsQuery["proposals"][0]) => {
   const againstVotesBPS = (10_000 * parseInt(prop.againstVotes)) / parseInt(prop.totalSupply)
