@@ -29,13 +29,12 @@ export default function Proposals({ ethProposals }) {
   const { query: baseQuery, isReady: baseQueryReady, push } = useRouter();
   const LIMIT = 200;
   const page = baseQuery?.page ? Number(baseQuery.page) : undefined;
-  const { data: baseData, error: baseError } = useQuery(
-    [USE_QUERY_KEYS.PROPOSALS, CHAIN_IDS.BASE, tokenAddress, page],
-    () => getProposals(CHAIN_IDS.BASE, tokenAddress, LIMIT),
-    {
-      enabled: baseQueryReady
-    }
-  );
+
+  const { data: baseData, error: baseError } = useQuery({
+    queryKey: [USE_QUERY_KEYS.PROPOSALS, CHAIN_IDS.BASE, tokenAddress, page],
+    queryFn: () => getProposals(CHAIN_IDS.BASE, tokenAddress, LIMIT),
+    enabled: baseQueryReady
+  });
 
   if (baseError) {
     console.error("Error getting BASE proposals data: ", baseError);

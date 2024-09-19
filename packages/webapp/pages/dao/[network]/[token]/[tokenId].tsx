@@ -23,6 +23,7 @@ import { getBids } from "queries/base/requests/getBids";
 import { BaseSDK } from "queries/resolvers";
 import { TokenWithDaoQuery } from "subgraph-generated/base";
 import { useAccount } from "wagmi";
+import { contracts } from "@constants/baseAddresses";
 
 export type TokenWithDao = NonNullable<TokenWithDaoQuery["token"]>;
 
@@ -40,7 +41,7 @@ interface TokenPageProps {
 
 const TokenPage = ({
   url,
-  collection = "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17" as AddressType,
+  collection = contracts.Token.Proxy as AddressType,
   token,
   // description,
   name,
@@ -160,9 +161,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params, res, req,
       treasuryAddress
     };
 
-    const ogImageURL = `${protocol}://${
-      req.headers.host
-    }/api/og/dao?data=${encodeURIComponent(JSON.stringify(daoOgMetadata))}`;
+    const ogImageURL = `${protocol}://${req.headers.host
+      }/api/og/dao?data=${encodeURIComponent(JSON.stringify(daoOgMetadata))}`;
 
     const { maxAge, swr } = CACHE_TIMES.TOKEN_INFO;
     res.setHeader("Cache-Control", `public, s-maxage=${maxAge}, stale-while-revalidate=${swr}`);
