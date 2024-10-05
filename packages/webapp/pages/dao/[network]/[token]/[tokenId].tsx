@@ -113,9 +113,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params, res, req,
 
   console.log(`/dao/[network]/[token]/[tokenId].tsx`, collection, network, tokenId, `\n\n`);
   try {
-    // const chain = PUBLIC_DEFAULT_CHAINS.find((x) => x.slug === network)
     const chain = CHAIN_IDS.BASE;
-    if (!chain) throw new Error("Invalid network");
+    if (!chain) {
+      throw new Error("Invalid network");
+    } else {
+      console.log('/dao/[network]/[tokenId].tsx network/chainId: ', chain);
+    }
 
     const env = process.env.VERCEL_ENV || "development";
     const protocol = env === "development" ? "http" : "https";

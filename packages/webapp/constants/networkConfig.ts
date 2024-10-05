@@ -10,5 +10,6 @@ export const enum CHAIN_IDS {
 
 export const ALCHEMY_RPC_URLS = {
   [CHAIN_IDS.ETHEREUM]: "https://eth-mainnet.g.alchemy.com/v2/",
-  [CHAIN_IDS.BASE]: "https://base-mainnet.g.alchemy.com/v2/"
+  [CHAIN_IDS.BASE]: "https://base-mainnet.g.alchemy.com/v2/",
+  [CHAIN_IDS.BASE_SEPOLIA]: process.env.NEXT_PUBLIC_GOLDSKY_BASE_SEPOLIA_API_URL
 };

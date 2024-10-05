@@ -15,7 +15,7 @@
     "deploy:base-sepolia": "pnpm clean && pnpm prepare:base-sepolia && pnpm codegen && graph build && goldsky subgraph deploy gnars-base-sepolia/1.1.1-test",
     "create:local": "graph create --node http://localhost:8020/ gnars-base",
     "remove:local": "graph remove --node http://localhost:8020/ gnars-base",
-    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 --network base gnars-base"
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gnars-base"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.50.1",
@@ -24,7 +24,9 @@
     "node": "^22.6.0"
   },
   "devDependencies": {
+    "@tenderly/hardhat-tenderly": "^2.3.0",
     "@types/node": "^18.11.18",
+    "dotenv": "^16.4.5",
     "hardhat": "^2.13.0",
     "matchstick-as": "0.5.0",
     "mustache": "^4.2.0",

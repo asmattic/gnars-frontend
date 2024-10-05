@@ -25,7 +25,7 @@ import { useMinBidIncrement } from "@components/modules/auction/hooks/useMinBidI
 import { useDaoStore } from "@components/modules/dao";
 // import { Icon } from 'src/components/Icon/Icon'
 // import AnimatedModal from 'src/components/Modal/AnimatedModal'
-import { PUBLIC_IS_TESTNET } from "@constants/defaultChains";
+import { PUBLIC_IS_TESTNET, PUBLIC_DEFAULT_CHAINS } from "@constants/defaultChains";
 import { USE_QUERY_KEYS } from "@constants/queryKeys";
 import { AddressType, Chain } from "@constants/types";
 import { averageWinningBid } from "@queries/base/requests/averageWinningBid";
@@ -173,7 +173,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
             <ModalHeader>Modal Title</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {/** TODO: Test Warning Modal, convert to @chakra/react modal if needed */}
+              {/** @TODO Test Warning Modal, convert to @chakra/react modal if needed */}
               <WarningModal
                 daoName={daoName}
                 currentBid={bidAmount}
@@ -250,7 +250,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
                     ml="x2"
                     mt={"5px"}
                     handleClick={async () => {
-                      const network = PUBLIC_IS_TESTNET ? "https://testnet.nouns.build" : "https://nouns.build";
+                      const network = PUBLIC_IS_TESTNET ? PUBLIC_DEFAULT_CHAINS.find(x => x.name === 'base')?.rpcUrls.default : PUBLIC_DEFAULT_CHAINS.find(x => x.name === 'base')?.rpcUrls.default;
                       const baseUrl = `${network}/dao/${chain.name.toLowerCase()}/${addresses.token}`;
                       if (address === undefined) {
                         await navigator.clipboard.writeText(baseUrl);

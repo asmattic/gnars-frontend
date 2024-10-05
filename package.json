@@ -15,6 +15,7 @@
   "engines": {
     "node": "18"
   },
+  "packageManager": "pnpm",
   "peerDependencies": {
     "utf-8-validate": "^5.0.2"
   }

@@ -12,7 +12,7 @@ import { AuctionBidFragment } from "subgraph-generated/base";
 
 export const BidCard = ({ bid }: { bid: AuctionBidFragment }) => {
   const { displayName, ensAvatar } = useNnsNameWithEnsFallback(bid?.bidder);
-  //const { displayName, ensAvatar } = useEnsData(bid?.bidder);
+  // const { displayName, ensAvatar } = useEnsData(bid?.bidder);
   const chain = useChainStore((x) => x.chain);
 
   return (

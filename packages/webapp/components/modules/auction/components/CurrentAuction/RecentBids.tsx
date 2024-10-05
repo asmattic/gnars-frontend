@@ -1,6 +1,5 @@
 import React from "react";
 import { AllBids } from "../AllBids";
-// import { allRecentBidsButton, recentBid } from '../Auction.css'
 import { Bidder } from "./Bidder";
 import { Icon } from "@chakra-ui/icons";
 import { Box, Flex, Stack, Text } from "@chakra-ui/react";
@@ -40,7 +39,6 @@ export const RecentBids: React.FC<RecentBidsProps> = ({ bids = exampleBids }) =>
             marginTop={"20px"}
             justify="space-between"
             key={`${bidder}_${amount}`}
-            // className={recentBid}
             className={"recent-bid"}
             color="white"
           >

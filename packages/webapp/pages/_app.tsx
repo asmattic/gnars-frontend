@@ -12,13 +12,13 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import theme from "theme";
 import { WagmiConfig, createConfig } from "wagmi";
-import { base, mainnet } from "wagmi/chains";
+import { base, hardhat, mainnet } from "wagmi/chains";
 
 const config = createConfig({
   ...getDefaultConfig({
     appName: "Gnars",
     alchemyId: alchemyApiKey,
-    chains: [mainnet, base],
+    chains: [mainnet, base, hardhat],
     walletConnectProjectId
   }),
   persister: null

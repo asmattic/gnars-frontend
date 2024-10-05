@@ -4,10 +4,12 @@ import { Address } from "viem";
 
 export const averageWinningBid = async (chainId: CHAIN_ID, tokenAddress: Address) => {
   const history = await BaseSDK.connect().auctionHistory({
-    daoId: tokenAddress.toLowerCase(),
+    daoId: tokenAddress ?? String(tokenAddress).toLowerCase(),
     startTime: 0,
     first: 5
   });
+
+  console.log('averageWinningBid.ts history ', history);
 
   const nonZeroAuctions = history.dao?.auctions.filter(
     (x) => x.winningBid?.amount && BigInt(x.winningBid?.amount) > 0n

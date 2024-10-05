@@ -13,6 +13,5 @@ export const PUBLIC_SUBGRAPH_URL = {
     "https://api.goldsky.com/api/public/project_clwh32mvalyh201vi1ck71seq/subgraphs/gnars-mainnet/latest/gn",
   [CHAIN_IDS.BASE]:
     process.env.NEXT_PUBLIC_BASE_SUBGRAPH_URL ||
-    "https://api.goldsky.com/api/public/project_clz4ukquribdy010b1fgua9nm/subgraphs/gnars-base/latest/gn",
-  [CHAIN_IDS.BASE_SEPOLIA]: process.env.NEXT_PUBLIC_BASE_SEPOLIA_SUBGRAPH_URL || ""
+    "https://api.goldsky.com/api/public/project_clz4ukquribdy010b1fgua9nm/subgraphs/gnars-base/latest/gn"
 };
