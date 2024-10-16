@@ -4,15 +4,20 @@ import "@nomicfoundation/hardhat-toolbox";
 import * as tenderly from "@tenderly/hardhat-tenderly";
 import * as dotenv from 'dotenv';
 
-dotenv.configure();
+dotenv.config();
+
 tenderly.setup({ automaticVerifications: true });
 
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
   defaultNetwork: "tenderly",
   networks: {
+    base: {
+      url: "https://base.gateway.tenderly.co",
+      chainId: 8453
+    },
     tenderly: {
-      url: "https://base.gateway.tenderly.co/5vrOW3c7szhbvTCPc9WCf6",
+      url: `https://base.gateway.tenderly.co/${process.env.TENDERLY_API_KEY}`,
       chainId: 8453,
     },
   },

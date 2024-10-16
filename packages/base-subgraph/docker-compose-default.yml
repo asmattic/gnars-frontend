@@ -18,7 +18,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      ethereum: 'base:http://host.docker.internal:8545'
+      ethereum: 'base:http://host.docker.internal:8545' # "mainnet:https://mainnet.infura.io/v3/5vrOW3c7szhbvTCPc9WCf6,base:https://base-mainnet.infura.io/v3/5vrOW3c7szhbvTCPc9WCf6,local:http://host.docker.internal:8545"
       ETHEREUM_POLLING_INTERVAL: 5000
       GRAPH_LOG: debug
       GRAPH_POI_ACCESS_TOKEN: 'local-development-token'

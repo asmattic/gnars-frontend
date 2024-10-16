@@ -18,18 +18,19 @@
     "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gnars-base"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.50.1",
-    "@graphprotocol/graph-ts": "0.30.0",
+    "@graphprotocol/graph-cli": "0.85.0",
+    "@graphprotocol/graph-ts": "0.35.1",
     "as-base64": "^0.2.0",
     "node": "^22.6.0"
   },
   "devDependencies": {
     "@tenderly/hardhat-tenderly": "^2.3.0",
-    "@types/node": "^18.11.18",
+    "@types/node": "^22.7.4",
     "dotenv": "^16.4.5",
-    "hardhat": "^2.13.0",
+    "ethers": "^6.13.3",
+    "hardhat": "^2.22.12",
     "matchstick-as": "0.5.0",
     "mustache": "^4.2.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   }
 }
