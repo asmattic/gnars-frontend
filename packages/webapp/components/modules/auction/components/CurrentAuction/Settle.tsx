@@ -25,6 +25,8 @@ export const Settle = ({ isEnding, owner, externalAuctionAddress, compact = fals
 
   const auctionAddress = externalAuctionAddress || addresses?.auction;
 
+  console.log('Settle: ', { externalAuctionAddress, address, addresses, chain, owner });
+
   const { data: paused } = useContractRead({
     enabled: !!auctionAddress,
     address: auctionAddress,

@@ -13,7 +13,7 @@ export const CHAIN_STORE_IDENTIFIER = `gnars-chain-${process.env.NEXT_PUBLIC_NET
 export const useChainStore = create(
   persist<ChainStoreProps>(
     (set) => ({
-      chain: PUBLIC_DEFAULT_CHAINS[0],
+      chain: PUBLIC_DEFAULT_CHAINS[2],
       setChain: (chain) => set({ chain })
     }),
     {

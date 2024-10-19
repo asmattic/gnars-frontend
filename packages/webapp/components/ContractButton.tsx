@@ -17,9 +17,11 @@ export const ContractButton = ({ children, handleClick, ...rest }: ContractButto
   const { canUserBridge, openBridgeModal } = useBridgeModal();
   const { data: userBalance } = useBalance({
     address: userAddress,
-    chainId: appChain.id
+    chainId: 8453// appChain.id
   });
 
+  // TODO: useSwitchNetwork
+  console.log('Contract Button: ', { userChain, appChain, canUserBridge, userAddress, userBalance });
   // const { openConnectModal } = useConnectModal()
   const { openConnectModal } = useModal();
   const { switchNetwork } = useSwitchNetwork();
@@ -30,7 +32,7 @@ export const ContractButton = ({ children, handleClick, ...rest }: ContractButto
     if (!userAddress) return openConnectModal?.();
     if (canUserBridge && userBalance?.decimals === 0) return openBridgeModal();
     if (!userAddress) return;
-    if (userChain?.id !== appChain.id) return handleSwitchNetwork();
+    if (userChain?.id !== 8453) return handleSwitchNetwork();
     handleClick(e);
   };
 
