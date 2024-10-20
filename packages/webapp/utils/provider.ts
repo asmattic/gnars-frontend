@@ -5,7 +5,7 @@ import { PublicClient, createPublicClient, http } from "viem";
 
 let providerMap: Map<CHAIN_ID, PublicClient>;
 
-export function getProvider(chainId = 8453): PublicClient {
+export function getProvider(chainId = CHAIN_ID.BASE): PublicClient {
   if (!providerMap) providerMap = new Map();
   if (!providerMap.has(chainId)) {
     // Use static provider to prevent re-querying for chain id since this won't change

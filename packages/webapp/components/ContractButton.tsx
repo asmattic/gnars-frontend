@@ -5,7 +5,7 @@ import { useBridgeModal } from "@hooks/useBridgeModal";
 import { ConnectKitButton, useModal } from "connectkit";
 import { useChainStore } from "stores/useChainStore";
 import { useAccount, useBalance, useNetwork, useSwitchNetwork } from "wagmi";
-
+import { CHAIN_ID } from "@constants/types";
 interface ContractButtonProps extends ButtonProps {
   handleClick: (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
@@ -17,7 +17,7 @@ export const ContractButton = ({ children, handleClick, ...rest }: ContractButto
   const { canUserBridge, openBridgeModal } = useBridgeModal();
   const { data: userBalance } = useBalance({
     address: userAddress,
-    chainId: 8453// appChain.id
+    chainId: CHAIN_ID.BASE// appChain.id
   });
 
   // TODO: useSwitchNetwork
@@ -32,7 +32,7 @@ export const ContractButton = ({ children, handleClick, ...rest }: ContractButto
     if (!userAddress) return openConnectModal?.();
     if (canUserBridge && userBalance?.decimals === 0) return openBridgeModal();
     if (!userAddress) return;
-    if (userChain?.id !== 8453) return handleSwitchNetwork();
+    if (userChain?.id !== CHAIN_ID.BASE) return handleSwitchNetwork();
     handleClick(e);
   };
 

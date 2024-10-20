@@ -16,7 +16,10 @@ import {
   Popover,
   Text,
   useDisclosure,
-  useNumberInput
+  useNumberInput,
+  useToast,
+  Wrap,
+  WrapItem
 } from "@chakra-ui/react";
 import { Icon } from "@chakra-ui/react";
 // @TODO Pull in contract btn from nouns-base
@@ -30,7 +33,7 @@ import { USE_QUERY_KEYS } from "@constants/queryKeys";
 import { AddressType, Chain } from "@constants/types";
 import { averageWinningBid } from "@queries/base/requests/averageWinningBid";
 import { getBids } from "@queries/base/requests/getBids";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { unpackOptionalArray } from "@utils/helpers";
 import { formatCryptoVal } from "@utils/numbers";
 import { auctionAbi } from "data/contract/abis/Auction";
@@ -38,6 +41,12 @@ import useSWR, { useSWRConfig } from "swr";
 import { formatEther, parseEther } from "viem";
 import { Address, useAccount, useBalance, useContractReads, useNetwork } from "wagmi";
 import { prepareWriteContract, waitForTransaction, writeContract } from "wagmi/actions";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from '@chakra-ui/react'
 
 interface PlaceBidProps {
   chain: Chain;
@@ -52,9 +61,9 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
   const { address } = useAccount();
   const { chain: wagmiChain } = useNetwork();
   const { data: balance } = useBalance({ address: address, chainId: chain.id });
-
-  // @TODO Use @tanstack/react-query equivalent of useSWRConfig()
-  const { mutate } = useSWRConfig();
+  const toast = useToast();
+  const statuses = ['success', 'error', 'warning', 'info'];
+  const queryClient = useQueryClient(); // Use queryClient to invalidate cache after mutation
   const { addresses } = useDaoStore();
 
   const [creatingBid, setCreatingBid] = useState(false);
@@ -66,6 +75,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
     address: addresses.auction as AddressType,
     chainId: chain.id
   };
+
   const { data } = useContractReads({
     allowFailure: false,
     contracts: [
@@ -73,6 +83,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
       { ...auctionContractParams, functionName: "minBidIncrement" }
     ] as const
   });
+
   const [auctionReservePrice, minBidIncrement] = unpackOptionalArray(data, 2);
 
   const { minBidAmount } = useMinBidIncrement({
@@ -82,9 +93,63 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
   });
 
   const { data: averageBid } = useQuery({
-    queryKey: addresses.token ? [USE_QUERY_KEYS.AVERAGE_WINNING_BID, chain.id, addresses.token] : undefined,
-    queryFn: () => averageWinningBid(chain.id, addresses.token as Address)
+    queryKey: [USE_QUERY_KEYS.AVERAGE_WINNING_BID, addresses.token],
+    queryFn: () => averageWinningBid(addresses.token as Address)
   });
+
+  // Mutation to handle creating a bid
+  const createBidMutation = useMutation(
+    async () => {
+      const amountInWei = parseEther(bidAmount!);
+
+      if (referral) {
+        const config = await prepareWriteContract({
+          abi: auctionAbi,
+          address: addresses.auction as Address,
+          functionName: 'createBidWithReferral',
+          args: [BigInt(tokenId), referral],
+          value: amountInWei,
+        });
+        return await writeContract(config);
+      } else {
+        const config = await prepareWriteContract({
+          abi: auctionAbi,
+          address: addresses.auction as Address,
+          functionName: 'createBid',
+          args: [BigInt(tokenId)],
+          value: amountInWei,
+        });
+        return await writeContract(config);
+      }
+    },
+    {
+      onSuccess: async (tx) => {
+        if (tx?.hash) await waitForTransaction({ hash: tx.hash });
+
+        // Invalidate queries to refetch updated auction bids and average winning bid
+        queryClient.invalidateQueries([USE_QUERY_KEYS.AUCTION_BIDS, chain.id, addresses.token, tokenId]);
+        queryClient.invalidateQueries([USE_QUERY_KEYS.AVERAGE_WINNING_BID, addresses.token]);
+      },
+      onError: (error) => {
+        console.error('Error creating bid:', { error, data, context });
+        toast({
+          title: `${error ? String(error) : 'POSSIBLE SUCCESS (TODO: RECHECK THIS)'}`,
+          status: error ? 'error' : 'info',
+          isClosable: true,
+        })
+      },
+      onSettled: (data, error, context) => {
+        console.error('Settled creating bid:', { error, data, context });
+        setCreatingBid(false);
+        setShowWarning(false);
+        toast({
+          title: `${error ? String(error) : (data ? data : 'settled')}`,
+          status: error ? 'error' : 'success',
+          isClosable: true,
+        })
+      },
+    }
+  );
 
   const isMinBid = Number(bidAmount) >= minBidAmount;
   const formattedMinBid = formatCryptoVal(minBidAmount);
@@ -92,11 +157,11 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
 
   // Warn users if they are bidding more than 5x the average winning bid or min bid amount
   const valueToCalculateWarning = averageBid || minBidAmountInWei;
-  const minAmountForWarning = valueToCalculateWarning * 5n;
+  // const minAmountForWarning = valueToCalculateWarning * 5n;
 
-  const handleCreateBid = async () => {
+  /*const handleCreateBid = async () => {
     if (!isMinBid || !bidAmount || creatingBid) return;
-
+    console.log(`components/modules/auction/components/CurrentAuction/PlaceBid.tsx => min bid warning: `, { isMinBid, formattedMinBid, minBidAmountInWei, minBidIncrement, averageBid, averageWinningBid, minAmountForWarning, });
     const amountInWei = parseEther(bidAmount);
 
     if (amountInWei && minAmountForWarning && amountInWei > minAmountForWarning) {
@@ -105,9 +170,24 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
     }
 
     await createBidTransaction();
+  };*/
+  const handleCreateBid = async () => {
+    if (!isMinBid || !bidAmount || creatingBid) return;
+
+    const amountInWei = parseEther(bidAmount);
+    const valueToCalculateWarning = averageBid || minBidAmountInWei;
+    const minAmountForWarning = valueToCalculateWarning * 5n;
+
+    if (amountInWei > minAmountForWarning) {
+      setShowWarning(true);
+      return;
+    }
+
+    // Trigger the mutation to create a bid
+    createBidMutation.mutate();
   };
 
-  const createBidTransaction = async () => {
+  /*const createBidTransaction = async () => {
     if (!isMinBid || !bidAmount) return;
 
     try {
@@ -142,7 +222,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
 
       // @TODO replace with @tanstack/react-query mutate
       await mutate([USE_QUERY_KEYS.AVERAGE_WINNING_BID, chain.id, addresses.token], () =>
-        averageWinningBid(chain.id, addresses.token as Address)
+        averageWinningBid(addresses.token as Address)
       );
     } catch (error) {
       console.error(error);
@@ -150,7 +230,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
       setCreatingBid(false);
       setShowWarning(false);
     }
-  };
+  };*/
 
   useEffect(() => {
     document.body.style.overflow = !!showWarning ? "hidden" : "unset";
@@ -167,6 +247,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
       direction={"row"} // @TODO column on mobile
       justify={"flex-start"}
     >
+
       {bidAmount && valueToCalculateWarning ? (
         <Modal size={"small"} isOpen={showWarning} onClose={onClose}>
           <ModalContent>
@@ -181,7 +262,7 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
                 isAverage={!!averageBid}
                 maxReccomendedBid={formatEther(valueToCalculateWarning)}
                 onCancel={() => setShowWarning(false)}
-                onConfirm={() => createBidTransaction()}
+                onConfirm={handleCreateBid}
               />
             </ModalBody>
             <ModalFooter>
@@ -193,7 +274,25 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
           </ModalContent>
         </Modal>
       ) : null}
-
+      {/*transactionError ?? (
+        <Wrap>
+          {statuses.map((status, i) => (
+            <WrapItem key={i}>
+              <Button
+                onClick={() =>
+                  toast({
+                    title: `${status} toast`,
+                    status: status ?? 'info',
+                    isClosable: true,
+                  })
+                }
+              >
+                Show {status} toast
+              </Button>
+            </WrapItem>
+          ))}
+        </Wrap>
+      )*/}
       {!creatingBid ? (
         <Flex wrap="wrap">
           <FormControl
@@ -251,7 +350,10 @@ export const PlaceBid = ({ chain, highestBid, referral, tokenId, daoName }: Plac
                     mt={"5px"}
                     handleClick={async () => {
                       const network = PUBLIC_IS_TESTNET ? PUBLIC_DEFAULT_CHAINS.find(x => x.name === 'base')?.rpcUrls.default : PUBLIC_DEFAULT_CHAINS.find(x => x.name === 'base')?.rpcUrls.default;
-                      const baseUrl = `${network}/dao/${chain.name.toLowerCase()}/${addresses.token}`;
+                      const baseUrl = `${network}/dao/base/${addresses.token}`;
+                      console.log(`components/modules/auction/components/CurrentAuction/PlaceBid.tsx => [(chain.id !== 1 ?) conditional of <ContractButton>]`, {
+                        network, baseUrl
+                      });
                       if (address === undefined) {
                         await navigator.clipboard.writeText(baseUrl);
                         return;

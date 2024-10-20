@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { auctionHistoryRequest } from "queries/base/requests/auctionHistory";
-import { averageWinningBid } from "queries/base/requests/averageWinningBid";
+// import { averageWinningBid } from "queries/base/requests/averageWinningBid";
 import { getBids } from "queries/base/requests/getBids";
 // import { SUCCESS_MESSAGES } from '@constants/messages'
 import { BaseSDK } from "queries/resolvers";

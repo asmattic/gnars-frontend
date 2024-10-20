@@ -8,7 +8,7 @@ export const auctionHistoryRequest = async (chainId: CHAIN_ID, collectionAddress
     const data = await BaseSDK.connect().auctionHistory({
       startTime,
       daoId: collectionAddress,
-      orderDirection: OrderDirection.Asc,
+      orderDirection: OrderDirection.Desc,
       orderBy: Auction_OrderBy.EndTime,
       first: 1000
     });

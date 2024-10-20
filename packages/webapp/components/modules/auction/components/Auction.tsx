@@ -41,6 +41,9 @@ interface AuctionControllerProps {
 
 export const Auction: React.FC<AuctionControllerProps> = ({ chain, auctionAddress, collection, token }) => {
   console.log("Auction.tsx props passed through: ", { chain, auctionAddress, collection, token });
+  if (!chain.id || !auctionAddress || !collection || !token) {
+    console.error(`components/modules/auction/components/Auction.tsx => not all props not included`, { chain, auctionAddress, collection, token });
+  }
   const { mintedAt, name, image, owner: tokenOwner, tokenId: queriedTokenId } = token;
   const mintDate = mintedAt * 1000;
   const bidAmount = token.auction?.winningBid?.amount;
@@ -50,11 +53,11 @@ export const Auction: React.FC<AuctionControllerProps> = ({ chain, auctionAddres
     data: auction,
     error: auctionError,
     isLoading: auctionIsLoading
-  } = useQuery(
-    [USE_QUERY_KEYS.AUCTION, chain.id, auctionAddress],
-    () => {
+  } = useQuery({
+    queryKey: [USE_QUERY_KEYS.AUCTION, chain?.id, auctionAddress],
+    queryFn: async () => {
       console.log(`Auction.tsx main auction query: `, {
-        auction: USE_QUERY_KEYS.AUCTION,
+        auctionKey: USE_QUERY_KEYS.AUCTION,
         chainId: chain.id,
         auctionAddress
       });
@@ -66,9 +69,9 @@ export const Auction: React.FC<AuctionControllerProps> = ({ chain, auctionAddres
           chainId: chain.id
         });
       }
-    }
-    //revalidateOnFocus: true
-  );
+    },
+    enabled: !!auctionAddress && !!chain.id,
+  });
 
   // @TODO Remove test logging
   React.useEffect(() => {
